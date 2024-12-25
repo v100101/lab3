@@ -1,10 +1,13 @@
-FROM ubuntu:20.04
-ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe/Moscow
-RUN apt-get update && apt-get install -y openssh-server python3-pip inetutils-ping net-tools curl
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN echo "root:root" | chpasswd
-
-EXPOSE 5000 3306
-
-ENTRYPOINT service ssh start && tail -f /dev/null
+FROM jenkins/jenkins:2.462.2-jdk17
+USER root
+RUN apt-get update && apt-get install -y lsb-release
+RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
+  https://download.docker.com/linux/debian/gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) \
+  signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \
+  https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+RUN apt-get update && apt-get install -y docker-ce-cli
+RUN apt-get update && apt-get install -y ansible && apt-get install -y docker-compose-plugin
+USER jenkins
+RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"
