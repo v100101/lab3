@@ -1,12 +1,12 @@
 [ansible_master]
-task2_2-ansible-1
+task3-ansible-1
 
 [database]
-task2_2-app-3
+task3-app-3
 
 [application]
-task2_2-app-1
-task2_2-app-2
+task3-app-1
+task3-app-2
 
 [webapp:children]
 database
